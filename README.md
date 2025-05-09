@@ -24,6 +24,9 @@ You can set up **Solvearr** as an indexer proxy in **Prowlarr**, **Sonarr** or *
 
 <img src="https://i.imgur.com/UZMGuuB.png" alt="Prowlarr Indexer Proxy Setup" width="1000"/>
 
+
+### Manual Request Example
+
 Send a request to open a Cloudflare-protected site:
 ```bash
 curl -X POST "http://localhost:8000/v1" \
