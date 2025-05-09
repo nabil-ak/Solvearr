@@ -1,10 +1,25 @@
-import tls_client
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 import time
+import tls_client
 import uvicorn
+from util import get_version, get_user_agent, IndexResponse, HealthResponse
 
 app = FastAPI()
+
+@app.get("/")
+def index():
+    res = IndexResponse(
+        msg="Solvearr is ready!",
+        version=get_version(),
+        userAgent=get_user_agent()
+    )
+    return res.model_dump()
+
+@app.get("/health")
+def health():
+    res = HealthResponse(status="ok")
+    return res.model_dump()
 
 @app.post("/v1")
 async def proxy_tls_client(request: Request):
@@ -21,7 +36,6 @@ async def proxy_tls_client(request: Request):
     post_data = data.get("postdata")
     proxy = data.get("proxy")
     return_only_cookies = data.get("returnonlycookies", False)
-
     session = tls_client.Session(
         client_identifier="chrome120",
         random_tls_extension_order=True
@@ -38,7 +52,7 @@ async def proxy_tls_client(request: Request):
         'sec-fetch-site': 'none',
         'sec-fetch-user': '?1',
         'upgrade-insecure-requests': '1',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'user-agent': get_user_agent(),
     }
     # Add cookies to session if provided
     if cookies:
@@ -47,7 +61,6 @@ async def proxy_tls_client(request: Request):
     # Add proxy if provided (tls_client supports proxies via session.proxies)
     if proxy and "url" in proxy:
         session.proxies = {"http": proxy["url"], "https": proxy["url"]}
-
     start_ts = int(time.time() * 1000)
     try:
         if cmd == "request.get":
@@ -59,7 +72,6 @@ async def proxy_tls_client(request: Request):
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
     end_ts = int(time.time() * 1000)
-
     # Format cookies for response
     cookie_list = []
     for c in session.cookies:
@@ -90,7 +102,7 @@ async def proxy_tls_client(request: Request):
         "message": "",
         "startTimestamp": start_ts,
         "endTimestamp": end_ts,
-        "version": "1.0.0"
+        "version": get_version()
     }
 
 if __name__ == "__main__":
