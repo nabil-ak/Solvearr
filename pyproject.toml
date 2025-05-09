@@ -1,0 +1,10 @@
+[project]
+name = "solvearr"
+version = "1.0.0"
+description = "A Cloudflare bypass proxy API compatible with FlareSolverr, Prowlarr, Sonarr, and Radarr. Provides a drop-in HTTP API for accessing Cloudflare-protected sites and indexers."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.115.12",
+    "tls-client>=1.0.1",
+]
