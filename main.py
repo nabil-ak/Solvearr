@@ -27,6 +27,7 @@ async def proxy_tls_client(request: Request):
         data = await request.json()
     except Exception:
         return JSONResponse({"status": "error", "message": "No JSON body provided."}, status_code=400)
+    
     # Accept both PascalCase/camelCase and lowercase keys
     data = {k.lower(): v for k, v in data.items()}
     cmd = data.get("cmd")
@@ -40,6 +41,7 @@ async def proxy_tls_client(request: Request):
         client_identifier="chrome120",
         random_tls_extension_order=True
     )
+
     headers = {
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'accept-language': 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',
@@ -54,6 +56,7 @@ async def proxy_tls_client(request: Request):
         'upgrade-insecure-requests': '1',
         'user-agent': get_user_agent(),
     }
+
     # Add cookies to session if provided
     if cookies:
         for cookie in cookies:
@@ -61,6 +64,7 @@ async def proxy_tls_client(request: Request):
     # Add proxy if provided (tls_client supports proxies via session.proxies)
     if proxy and "url" in proxy:
         session.proxies = {"http": proxy["url"], "https": proxy["url"]}
+
     start_ts = int(time.time() * 1000)
     try:
         if cmd == "request.get":
@@ -72,6 +76,8 @@ async def proxy_tls_client(request: Request):
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
     end_ts = int(time.time() * 1000)
+
+
     # Format cookies for response
     cookie_list = []
     for c in session.cookies:
@@ -87,6 +93,8 @@ async def proxy_tls_client(request: Request):
             "session": c.expires is None,
             "sameSite": getattr(c, "_rest", {}).get("SameSite", "None")
         })
+
+    
     # Prepare response
     solution = {
         "url": str(resp.url),
