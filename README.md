@@ -9,6 +9,71 @@ This project, **Solvearr**, is a Cloudflare bypass proxy API designed to access 
 - Implements the same API as FlareSolverr for seamless integration.
 - Supports GET and POST requests, cookies, custom headers, and proxy settings.
 
+## Installation
+
+### Supported Architectures
+The container supports the following architectures:
+- `linux/amd64`: Standard desktop/laptop computers
+- `linux/arm64`: Modern Raspberry Pi (3, 4, and newer)
+
+### Docker Run
+```bash
+docker run -d \
+  --name=solvearr \
+  -p 8191:8191 \
+  --restart unless-stopped \
+  nabilak/solvearr
+```
+
+### Docker Compose
+```yaml
+version: "3"
+services:
+  solvearr:
+    image: nabilak/solvearr
+    container_name: solvearr
+    ports:
+      - 8191:8191
+    restart: unless-stopped
+```
+
+### Parameters
+| Parameter | Function |
+|-----------|----------|
+| `-p 8191:8191` | The port the application runs on |
+| `--restart unless-stopped` | Restart the container unless it is explicitly stopped |
+
+### Manual Installation
+If you prefer to run Solvearr without Docker, follow these steps:
+
+1. Ensure you have Python installed:
+```bash
+python --version
+```
+
+2. Install uv (Python package installer):
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+3. Clone the repository:
+```bash
+git clone https://github.com/nabilak/solvearr.git
+cd solvearr
+```
+
+4. Install dependencies and the project:
+```bash
+uv sync --frozen --no-dev
+```
+
+5. Run the application:
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8191
+```
+
+The application will be available at `http://localhost:8191`.
+
 ## Usage Example
 
 You can set up **Solvearr** as an indexer proxy in **Prowlarr**, **Sonarr** or **Radarr** to bypass Cloudflare for your indexers. Here's how:
